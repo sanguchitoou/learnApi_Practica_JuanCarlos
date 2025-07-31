@@ -26,6 +26,7 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
+    //GET
     @GetMapping("/getDataProducts")
     private ResponseEntity<Page<ProductDTO>> getProducts(
             @RequestParam(defaultValue = "0") int page,

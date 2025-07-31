@@ -83,4 +83,11 @@ public class CategoryService {
         objEntity.setFechaCreacion(json.getFechaCreacion());
         return objEntity;
     }
+
+
+    public Page<CategoryDTO> getAllCategories(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CategoryEntity> pageEntity = repo.findAll(pageable);
+        return pageEntity.map(this::convertirADTO);
+    }
 }
