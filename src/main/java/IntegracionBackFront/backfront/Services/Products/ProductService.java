@@ -13,9 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Service
 public class ProductService {
@@ -54,6 +51,8 @@ public class ProductService {
         productoExistente.setFechaIngreso(json.getFechaIngreso());
         productoExistente.setCategoriaId(json.getCategoriaId());
         productoExistente.setUsuarioId(json.getUsuarioId());
+        //Puede depender
+        productoExistente.setImagen_url(json.getImagen_url());
         //3. Actualización del registro
         ProductEntity productoActualizado = repo.save(productoExistente);
         //4. Convertir a DTO
@@ -81,6 +80,7 @@ public class ProductService {
         dto.setFechaIngreso(objEntity.getFechaIngreso());
         dto.setCategoriaId(objEntity.getCategoriaId());
         dto.setUsuarioId(objEntity.getUsuarioId());
+        dto.setImagen_url(objEntity.getImagen_url());
         return dto;
     }
 
@@ -93,6 +93,7 @@ public class ProductService {
         entity.setFechaIngreso(json.getFechaIngreso());
         entity.setCategoriaId(json.getCategoriaId());
         entity.setUsuarioId(json.getUsuarioId());
+        entity.setImagen_url(json.getImagen_url());
         return entity;
     }
 }
