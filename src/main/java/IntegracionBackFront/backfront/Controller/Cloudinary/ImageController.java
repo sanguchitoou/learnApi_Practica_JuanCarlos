@@ -1,6 +1,7 @@
 package IntegracionBackFront.backfront.Controller.Cloudinary;
 
 import IntegracionBackFront.backfront.Services.Cloudinary.CloudinaryService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.channels.MulticastChannel;
 import java.util.Map;
 
 @RestController
@@ -27,12 +27,12 @@ public class ImageController {
         this.objCloudService = objCloudService;
     }
 
-    //Método que permite CARGAR LA IMÁGEN (POST) con respuesta a la entidad
-    @PostMapping("/postImage")
-    public ResponseEntity<?> postImage(@RequestParam("image") MultipartFile file){
+    //Método que permite CARGAR LA IMÁGEN (POST) con respuesta a la entidad (Raíz)
+    @PostMapping("/postImageRoot")
+    public ResponseEntity<?> postImageRoot(@RequestParam("image") MultipartFile file){
         try{
             //Llamamos al SERVICIO para subir la imagen y obtenemos la URL de la misma
-            String imageUrl = objCloudService.uploadImage(file);
+            String imageUrl = objCloudService.uploadImageRoot(file);
             //Se debe de llamar SI O SI esta variable URL, a la hora de llamar al FRONTEND
             return ResponseEntity.ok(Map.of(
                     "message", "Imagen subida exitosamente",
@@ -40,6 +40,20 @@ public class ImageController {
             ));
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Error al subir la imágen, error: " + e);
+        }
+    }
+
+    //Método que permite CARGAR LA IMÁGEN (POST) con respuesta a entidad (Folder)
+    @PostMapping("/postImageFolder")
+    public ResponseEntity<?> postImageFolder(@RequestParam("image") MultipartFile file, @RequestParam String folder){
+        try{
+            String imageUrl = objCloudService.uploadImageFolder(file, folder);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Imagen subida exitosamente",
+                    "url", imageUrl
+            ));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Error al subir la imagen, error: " + e);
         }
     }
 }

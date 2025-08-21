@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class CloudinaryService {
@@ -28,7 +29,7 @@ public class CloudinaryService {
 
     //Creación del método que cargará el cometido (imágenes, PDFS, etc.)
     //MultipartFile sirve para subir CUALQUIER ARCHIVO, subida de imágenes a la raíz de CLOUDINARY (Sin carpetas)
-    public String uploadImage(MultipartFile file) throws IOException {
+    public String uploadImageRoot(MultipartFile file) throws IOException {
         validateImage(file);
         Map<?, ?> updloadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                 "resource_type", "auto",
@@ -36,6 +37,30 @@ public class CloudinaryService {
         ));
         //Retornamos la imágen subida a la RAÍZ de Cloudinary
         return (String) updloadResult.get("secure_url");
+    }
+
+    //Método que permie subir imágenes EN CARPETAS ESPECÍFICAS dentro de Cloudinary
+    public String uploadImageFolder(MultipartFile file, String folder) throws IOException {
+        validateImage(file);
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
+        //Cambio de nombre por SEGURIDAD, manteniendo la extensión y agregando variable "img_"
+        String uniqueFileName = "img_" + UUID.randomUUID() + fileExtension;
+
+        //Declaración de validaciones
+        Map<String, Object> options = ObjectUtils.asMap(
+                "folder", folder,       //Carpeta de destino de la imagen
+                "public_id", uniqueFileName,    //Nombre único para el archivo
+                "user_filename", false,         //Indicamos que NO se usará el nombre original
+                "unique_filename", false,       //No generará nombre único (ya que se hace con el UUID)
+                "overwrite", false,             //No se sobreescribirán archivos existentes
+                "resource_type", "auto",
+                "quality", "auto:good"
+        );
+
+        //Subida del archivo con MAP
+        Map<?, ?> uploadResultImage = cloudinary.uploader().upload(file.getBytes(), options);
+        return (String) uploadResultImage.get("secure_url");
     }
 
     //Creación del MÉTODO que validará la subida del archivo
@@ -67,7 +92,4 @@ public class CloudinaryService {
             throw new IllegalArgumentException("El archivo debe ser una imágen válida");
         }
     }
-
-    //Método que permie subir imágenes EN CARPETAS ESPECÍFICAS dentro de Cloudinary
-
 }
