@@ -13,6 +13,7 @@ public class AuthService {
     //Inicialización del Service, INYECTAOS el REPO del USER
     @Autowired
     private UserRepository repo;
+
     public  boolean Login (String correo, String contrasena){
         Argon2Password objHash = new Argon2Password();
         Optional<UserEntity> list = repo.findByCorreo(correo).stream().findFirst();
@@ -29,6 +30,7 @@ public class AuthService {
         }
         return false;
     }
+
     public Optional<UserEntity> obtenerUsuario (String email){
         Optional<UserEntity> userOpt = repo. findByCorreo(email);
         return (userOpt != null) ? userOpt : null;

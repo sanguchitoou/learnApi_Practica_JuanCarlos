@@ -7,6 +7,7 @@ import IntegracionBackFront.backfront.Utils.JWTUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,23 +21,27 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
     //Iniciamos inyectando el service
+    @Autowired
     private AuthService objAuthService;
     //Inyectamos el JWT
+    @Autowired
     private JWTUtils objJWTToken;
 
     //Método POST
     @PostMapping("/login")
-    private ResponseEntity<String> login(@Valid @RequestBody UserDTO userDTO, HttpServletRequest response){
+    private ResponseEntity<String> login(@Valid @RequestBody UserDTO userDTO, HttpServletResponse response){
         //Validación de datos repetidos
         if (userDTO.getCorreo() == null || userDTO.getCorreo().isBlank() ||
                 userDTO.getContrasena() == null || userDTO.getContrasena().isBlank()) {
             return ResponseEntity.status(401).body("Error: Credenciales incompletas");
         }
         if(objAuthService.Login(userDTO.getCorreo(), userDTO.getContrasena())){
+            addTokenCookie(response, userDTO.getCorreo());
             return ResponseEntity.ok("Inicio de sesión exitoso");
         }
         return ResponseEntity.status(401).body("Credenciales incorrectas");
     }
+
     private void addTokenCookie(HttpServletResponse response, String correo) {
         // Obtener el usuario completo de la base de datos
         Optional<UserEntity> userOpt = objAuthService.obtenerUsuario(correo);

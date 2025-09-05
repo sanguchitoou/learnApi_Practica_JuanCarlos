@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class Argon2Password {
     //Variables de inicialización del HASH Argon2ID
     private static final int ITERATIONS = 10;
-    private static final int MEMORY = 32678;
+    private static final int MEMORY = 32768;
     private static final int PARALLELISM = 2;
 
     //Instancia de la clase Argon
